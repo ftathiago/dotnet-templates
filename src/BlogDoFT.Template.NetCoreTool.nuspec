@@ -4,7 +4,7 @@
     <id>BlogDoFT.Template.NetCoreTool.nuspec</id>
     <version>1.0.0</version>
     <description>
-      Project template for creating a .Net WebApi
+      C# Micro services like templates
     </description>
     <authors>Francisco Thiago de Almeida</authors>
     <license type="expression">Apache-2.0</license>
