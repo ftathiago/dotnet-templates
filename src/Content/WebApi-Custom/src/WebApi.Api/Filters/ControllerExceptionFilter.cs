@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -9,25 +10,23 @@ namespace WebApi.Api.Filters
     {
         private readonly ILogger<ControllerExceptionFilter> _logger;
 
-        public ControllerExceptionFilter(ILogger<ControllerExceptionFilter> logger)
-        {
+        public ControllerExceptionFilter(ILogger<ControllerExceptionFilter> logger) =>
             _logger = logger;
-        }
 
         public void OnException(ExceptionContext context)
         {
             var errorMessage = context.Exception
-                    .GetAllMessage(",")
-                    .ToString();
+                .GetAllMessage(",")
+                .ToString();
 
             _logger.LogError(context.Exception, errorMessage);
 
             context.ExceptionHandled = true;
 
-            context.Result = new BadRequestObjectResult(new
+            context.Result = new ObjectResult(new { errorMessage })
             {
-                errorMessage,
-            });
+                StatusCode = StatusCodes.Status500InternalServerError,
+            };
         }
     }
 }
