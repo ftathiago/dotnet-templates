@@ -1,9 +1,9 @@
 using System;
 using System.Net;
 using WebApi.Business.Entities;
+using WebApi.Business.Notifications;
 using WebApi.Business.Repositories;
 using WebApi.Shared.Data.Contexts;
-using WebApi.Shared.Holders;
 
 namespace WebApi.Business.Services
 {
@@ -11,21 +11,20 @@ namespace WebApi.Business.Services
     {
         private readonly ISampleRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMessageHolder _messageHolder;
+        private readonly INotification _notifications;
 
         public SampleService(
             ISampleRepository repository,
             IUnitOfWork unitOfWork,
-            IMessageHolder messageHolder)
+            INotification notifications)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
-            _messageHolder = messageHolder;
+            _notifications = notifications;
         }
 
         public SampleEntity GetSampleBy(int id)
         {
-            // Open a transaction is not really necessary. It's just an example of how to use UoW.
             try
             {
                 _unitOfWork.BeginTransaction();
@@ -39,7 +38,7 @@ namespace WebApi.Business.Services
             catch (Exception ex)
             {
                 _unitOfWork.Rollback();
-                _messageHolder.AddMessage(HttpStatusCode.InternalServerError, ex.Message);
+                _notifications.AddMessage((int)HttpStatusCode.InternalServerError, ex.Message);
                 return null;
             }
         }

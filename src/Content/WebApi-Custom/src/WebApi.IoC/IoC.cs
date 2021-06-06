@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using WebApi.Business.Extensions;
+using WebApi.Business.Notifications;
 using WebApi.InfraData.Extensions;
-using WebApi.Shared.Holders;
 
 namespace WebApi.IoC
 {
@@ -13,6 +13,6 @@ namespace WebApi.IoC
             services
                 .AddBusiness()
                 .AddInfraData()
-                .AddScoped<IMessageHolder, MessageHolder>();
+                .AddScoped<INotification, Notification>();
     }
 }
