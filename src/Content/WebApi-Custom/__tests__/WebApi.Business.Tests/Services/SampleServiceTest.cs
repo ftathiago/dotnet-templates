@@ -1,13 +1,12 @@
 using FluentAssertions;
 using Moq;
 using System;
-using System.Net;
 using WebApi.Business.Entities;
+using WebApi.Business.Notifications;
 using WebApi.Business.Repositories;
 using WebApi.Business.Services;
 using WebApi.Business.Tests.Fixtures;
 using WebApi.Shared.Data.Contexts;
-using WebApi.Shared.Holders;
 using Xunit;
 
 namespace WebApi.Business.Tests.Services
@@ -16,13 +15,13 @@ namespace WebApi.Business.Tests.Services
     {
         private readonly Mock<ISampleRepository> _repository;
         private readonly Mock<IUnitOfWork> _unitOfWork;
-        private readonly Mock<IMessageHolder> _messageHolder;
+        private readonly Mock<INotification> _notifications;
 
         public SampleServiceTest()
         {
             _repository = new Mock<ISampleRepository>(MockBehavior.Strict);
             _unitOfWork = new Mock<IUnitOfWork>(MockBehavior.Strict);
-            _messageHolder = new Mock<IMessageHolder>(MockBehavior.Strict);
+            _notifications = new Mock<INotification>(MockBehavior.Strict);
         }
 
         [Fact]
@@ -38,7 +37,7 @@ namespace WebApi.Business.Tests.Services
             var service = new SampleService(
                 _repository.Object,
                 _unitOfWork.Object,
-                _messageHolder.Object);
+                _notifications.Object);
 
             // When
             var entity = service.GetSampleBy(expectedEntity.Id);
@@ -60,7 +59,7 @@ namespace WebApi.Business.Tests.Services
             var service = new SampleService(
                 _repository.Object,
                 _unitOfWork.Object,
-                _messageHolder.Object);
+                _notifications.Object);
 
             // When
             var entity = service.GetSampleBy(Fixture.Get().Random.Int());
@@ -73,10 +72,10 @@ namespace WebApi.Business.Tests.Services
         public void ShouldNotThrowExceptions()
         {
             var exceptionThrowed = new TestException();
-            const HttpStatusCode ExpectedStatusCode = HttpStatusCode.InternalServerError;
-            _messageHolder
+            const int ErrorCode = 500;
+            _notifications
                 .Setup(mh => mh.AddMessage(
-                    ExpectedStatusCode,
+                    ErrorCode,
                     exceptionThrowed.Message));
             _repository
                 .Setup(s => s.GetById(It.IsAny<int>()))
@@ -86,7 +85,7 @@ namespace WebApi.Business.Tests.Services
             var service = new SampleService(
                 _repository.Object,
                 _unitOfWork.Object,
-                _messageHolder.Object);
+                _notifications.Object);
 
             // When
             Action act = () => service.GetSampleBy(Fixture.Get().Random.Int());
@@ -99,10 +98,10 @@ namespace WebApi.Business.Tests.Services
         public void ShouldRollbackWhenAnyErrorOccursInsideRepository()
         {
             var exceptionThrowed = new TestException();
-            const HttpStatusCode ExpectedStatusCode = HttpStatusCode.InternalServerError;
-            _messageHolder
+            const int ErrorCode = 500;
+            _notifications
                 .Setup(mh => mh.AddMessage(
-                    ExpectedStatusCode,
+                    ErrorCode,
                     exceptionThrowed.Message));
             _repository
                 .Setup(s => s.GetById(It.IsAny<int>()))
@@ -112,7 +111,7 @@ namespace WebApi.Business.Tests.Services
             var service = new SampleService(
                 _repository.Object,
                 _unitOfWork.Object,
-                _messageHolder.Object);
+                _notifications.Object);
 
             // When
             var entity = service.GetSampleBy(Fixture.Get().Random.Int());
