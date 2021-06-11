@@ -11,11 +11,24 @@
   "identity": "BlogDoFT.Templates.WebApi",
   "tags": {
     "language": "C#",
-    "type": "project"
+    "type": "solution"
   },
   "defaultName": "WebApi",
   "sourceName": "WebApi",
   "preferNameDirectory": true,
+  "guids": [
+    "F365E7EA-A372-4AC0-8263-882141CB183E",
+    "2B1C6F20-29C9-4E62-B3D9-0F098B0D51BB",
+    "DBFD4FA0-B511-40C8-BFC0-6ED2D0035CE5",
+    "9781A08C-3AD5-4B91-80CC-80FD5CCE46C7",
+    "3378DAF0-95D4-4861-BE40-99D0358C0971",
+    "12445EBD-B43A-481A-8BF0-9B3B92288AAF",
+    "BE37901B-5258-4216-83F1-0A1F74D9723A",
+    "916EEC3D-E4E6-442A-AB43-18A711530859",
+    "213E0D9A-0E97-41F6-8F49-F4CAFB508BB7",
+    "0D51FBC1-201F-48E7-A081-053DC34470ED",
+    "C1DB3C6F-3E31-4CE8-959A-BE6DABD7C33F"
+  ],
   "symbols": {
     "Framework": {
       "type": "parameter",
@@ -60,6 +73,11 @@
           ]
         }
       ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "WebApi.sln"
     }
   ]
 }
