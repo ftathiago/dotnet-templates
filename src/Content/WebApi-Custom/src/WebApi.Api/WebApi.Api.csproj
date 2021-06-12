@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <CodeAnalysisRuleSet>..\..\.ruleset</CodeAnalysisRuleSet>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />    
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Roslynator.Analyzers" Version="3.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -22,7 +22,7 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.2" />
-</ItemGroup>
+  </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
@@ -34,6 +34,6 @@
     <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj" />
     <ProjectReference Include="..\WebApi.Business\WebApi.Business.csproj" />
     <ProjectReference Include="..\WebApi.WarmUp\WebApi.WarmUp.csproj" />
-  </ItemGroup>  
+  </ItemGroup>
 
 </Project>
