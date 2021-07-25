@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using WebApi.Shared.Extensions;
 
 namespace WebApi.InfraData.Exceptions
@@ -25,6 +26,13 @@ namespace WebApi.InfraData.Exceptions
 
         protected UpdateException(string message, System.Exception inner)
             : base(message, inner)
+        {
+        }
+
+        protected UpdateException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }

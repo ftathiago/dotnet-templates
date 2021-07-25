@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using WebApi.Shared.Extensions;
 
 namespace WebApi.Shared.Exceptions
@@ -19,6 +20,13 @@ namespace WebApi.Shared.Exceptions
 
         public NotOpenTransactionException(string message, Exception inner)
             : base(message, inner)
+        {
+        }
+
+        protected NotOpenTransactionException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }

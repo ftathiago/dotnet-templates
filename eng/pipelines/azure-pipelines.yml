@@ -39,7 +39,7 @@ stages:
             dotnet sonarscanner begin `
               /k:"dotnet-template-devops" `
               /d:sonar.host.url=$(Sonar.Host) `
-              /d:sonar.cs.opencover.reportsPath=**/*coverage.opencover.xml `
+              /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml `
               /o:$(Sonar.Organization)
           displayName: Preparing SonarQube
           env:

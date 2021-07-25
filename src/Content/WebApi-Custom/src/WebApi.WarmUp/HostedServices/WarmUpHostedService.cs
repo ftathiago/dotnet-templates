@@ -17,7 +17,7 @@ namespace WebApi.WarmUp.HostedServices
                 preloading,
                 warmUpExecutor);
 
-        protected override async Task ExecuteAsync(CancellationToken token)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             foreach (var command in _commands)
             {
