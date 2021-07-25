@@ -235,6 +235,24 @@ dotnet_diagnostic.RS0037.severity = none
 
 # RCS1090: Call 'ConfigureAwait(false)'.
 dotnet_diagnostic.RCS1090.severity = none
+dotnet_diagnostic.SA1619.severity=none
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity=none
+dotnet_diagnostic.SA1000.severity=none
+dotnet_diagnostic.SA1600.severity=none
+dotnet_diagnostic.SA1623.severity=none
+dotnet_diagnostic.SA1609.severity=none
+dotnet_diagnostic.SA1615.severity=none
+dotnet_diagnostic.SA1629.severity=none
+dotnet_diagnostic.SA1633.severity=none
+dotnet_diagnostic.SA1309.severity=none
+dotnet_diagnostic.SA1101.severity=none
+dotnet_diagnostic.SA1208.severity=none
+dotnet_diagnostic.SA1119.severity=none
+
+# SA0001: XML comment analysis disabled
+dotnet_diagnostic.SA0001.severity =none
 
 [src/CodeStyle/**.{cs,vb}]
 # warning RS0005: Do not use generic CodeAction.Create to create CodeAction

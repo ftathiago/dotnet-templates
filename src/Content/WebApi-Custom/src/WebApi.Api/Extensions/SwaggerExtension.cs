@@ -2,7 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using WebApi.Api.Configurations;
 
 namespace WebApi.Api.Extensions
@@ -11,7 +13,7 @@ namespace WebApi.Api.Extensions
     public static class SwaggerExtension
     {
         public static IServiceCollection ConfigSwagger(this IServiceCollection services) => services
-            .AddSwaggerGen(s =>
+            .AddSwaggerGen(options =>
             {
                 /*********************************************************
                  Uncomment if you need a Bearer token authentication
@@ -40,9 +42,25 @@ namespace WebApi.Api.Extensions
                     },
                  });
                  *********************************************************/
-                s.ExampleFilters();
+                options.ExampleFilters();
+                options.OperationFilter<AddResponseHeadersFilter>();
+                options.CustomSchemaIds(type => type.FullName);
+                options.LoadDocumentationFiles();
             })
             .AddSwaggerExamplesFromAssemblyOf<Startup>()
             .AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
+        private static void LoadDocumentationFiles(this SwaggerGenOptions options)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var xmlDocumentationFile = $"{assembly.GetName().Name}.xml";
+                var xmlDocumentationPath = Path.Combine(AppContext.BaseDirectory, xmlDocumentationFile);
+                if (File.Exists(xmlDocumentationPath))
+                {
+                    options.IncludeXmlComments(xmlDocumentationPath);
+                }
+            }
+        }
     }
 }

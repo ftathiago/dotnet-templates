@@ -1,0 +1,101 @@
+trigger:
+  - feature/*
+  - develop
+  - release/*
+  - main
+
+pr:
+  - main
+  - develop
+  - release/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: solution
+    value: '**/*.sln'
+  - name: buildPlatform
+    value: 'Any CPU'
+  - name: buildConfiguration
+    value: 'Release'
+  - name: verifyBuild
+    value: 'false'
+  - group: SonarVariables
+  - group: Nuget
+
+stages:
+  - stage: build
+    displayName: Building application
+    jobs:
+      - job: build
+        steps:
+        - checkout: self
+          persistCredentials: 'true'
+          clean: 'true'
+
+        - powershell: |
+            dotnet tool install --global dotnet-sonarscanner
+            dotnet sonarscanner begin `
+              /k:"dotnet-template-devops" `
+              /d:sonar.host.url=$(Sonar.Host) `
+              /d:sonar.cs.opencover.reportsPath=**/*coverage.opencover.xml `
+              /o:$(Sonar.Organization)
+          displayName: Preparing SonarQube
+          env:
+            SONAR_TOKEN: $(Sonar.Token)
+
+        - task: UseDotNet@2
+          inputs:
+            version: '5.0.x'
+            includePreviewVersions: true
+
+        - task: DotNetCoreCLI@2
+          displayName: Restore project
+          inputs:
+            command: restore
+            projects: '**/*.sln'
+
+        - task: DotNetCoreCLI@2
+          displayName: Build
+          inputs:
+            command: build
+            projects: '**/*.sln'
+            arguments: '--configuration $(buildConfiguration)'
+
+        - task: DotNetCoreCLI@2
+          displayName: Test Application
+          inputs:
+            command: test
+            projects: '**./*.sln'
+            arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=coverage.opencover.xml'
+
+        - powershell: |
+            dotnet sonarscanner end
+          env:
+            SONAR_TOKEN: $(Sonar.Token)
+  - stage: Deploy
+    displayName: Deploy nuget 
+    dependsOn: build
+    condition: and(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranchName'], 'main'))
+    jobs:
+      - job: buildPackage
+        steps:
+          - task: NuGetCommand@2
+            inputs:
+              command: 'pack'
+              packagesToPack: '**/*.nuspec'
+              versioningScheme: 'off'
+
+          - powershell: |
+              Get-ChildItem -path PATH_PACK -Recurse | `
+              Select-Object -ExpandProperty FullName | `
+              ForEach-Object { `
+                Write-Host 'Sending ' $_
+                dotnet nuget push $_ -s nuget.org --api-key $env:NUGET_AUTH_TOKEN `
+              }
+            displayName: Publish nuget pack
+            failOnStderr: 'true'
+            env:
+              PATH_PACK: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+              NUGET_AUTH_TOKEN: '$(Nuget.Token)'
