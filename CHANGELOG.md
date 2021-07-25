@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [1.0.1](https://github.com/ftathiago/dotnet-templates/compare/v1.0.0...v1.0.1) (2021-06-06)
-### Features
+## [1.1.1](https://github.com/ftathiago/dotnet-templates/compare/v1.0.0...v1.1.1) (2021-06-06)
 
+### Renaming package
+
+The package was renamed from BlogDoFT.Template.NetCoreTool.nuspec to BlogDoFT.dotnet-templates. With this change, we hope to increase "findability" at nuget.org
+### Features
+#### feat: add docker support to WebApi-Custom template
+- Create a docker-compose file, which raises a SQLServer instance with database's creation script. Also, raise a instance of WebApi at 8080 port
+- Add a script to auto-create or update dockerfile. Just type `.\create_docker.ps1` at powershell. A new file will be create/updated at `.\eng\docker`
+
+#### feat: Setup CI with Azure pipelines
+- Implements a azure pipeline to build and PR validation. You can watch this project code quality at: https://sonarcloud.io/dashboard?id=dotnet-template-devops
+ 
 #### refact: Alter MessageHolder to correspond to Notification pattern
 
 - Change MessageHolder ErrorCode to int: As notification pattern it's about domain logic, keep error code as HttpStatusCode is a SOLID offense and also a "Ports and Adapters" offense.
