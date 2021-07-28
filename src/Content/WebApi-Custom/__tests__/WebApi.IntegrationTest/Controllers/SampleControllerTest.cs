@@ -1,12 +1,5 @@
-using FluentAssertions;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using WebApi.InfraData.Models;
 using WebApi.IntegrationTest.Fixtures;
-using WebApi.IntegrationTest.Fixtures.DataFixtures;
 using Xunit;
 
 namespace WebApi.IntegrationTest.Controllers
