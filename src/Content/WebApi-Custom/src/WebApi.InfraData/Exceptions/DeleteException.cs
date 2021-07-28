@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using WebApi.Shared.Extensions;
 
 namespace WebApi.InfraData.Exceptions
@@ -15,7 +16,6 @@ namespace WebApi.InfraData.Exceptions
         }
 
         protected DeleteException()
-            : base()
         {
         }
 
@@ -26,6 +26,13 @@ namespace WebApi.InfraData.Exceptions
 
         protected DeleteException(string message, System.Exception inner)
             : base(message, inner)
+        {
+        }
+
+        protected DeleteException(
+            SerializationInfo info,
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }
