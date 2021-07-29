@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using WebApi.Shared.Extensions;
 
 namespace WebApi.Shared.Exceptions
 {
+    [ExcludeFromCodeCoverage]
+    [Serializable]
     public class NotOpenTransactionException : UnitOfWorkException
     {
         private const string ErrorMessage =

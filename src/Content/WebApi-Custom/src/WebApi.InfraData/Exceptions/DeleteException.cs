@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using WebApi.Shared.Extensions;
@@ -5,6 +6,7 @@ using WebApi.Shared.Extensions;
 namespace WebApi.InfraData.Exceptions
 {
     [ExcludeFromCodeCoverage]
+    [Serializable]
     public class DeleteException : InfraDataException
     {
         private const string ErrorMessage =
