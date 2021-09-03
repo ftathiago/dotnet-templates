@@ -11,8 +11,11 @@
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>
+    <dependencies exclude="obj">
+      <group targetFramework="net5.0" />
+    </dependencies>
   </metadata>
   <files>
-    <file src="Content\**\*.*" exclude="Content\**\bin\**\*.*;Content\**\obj\**\*.*;Content\**\coverage_report\*.*" target="Content" />
+    <file src="Content/**/*.*" exclude="Content/**/bin/**/*.*;Content/**/obj/**/*.*;Content/**/coverage_report/*.*" target="Content" />
   </files>
 </package>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <NuspecFile>BlogDoFT.dotnet-templates.nuspec</NuspecFile>
+
+        <NoBuild>true</NoBuild>
+        <NoRestore>true</NoRestore>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+    </PropertyGroup>
+
+</Project>
