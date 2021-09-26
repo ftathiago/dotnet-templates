@@ -32,9 +32,9 @@ Clean
 
 # create nuget package
 $outputpath = Join-Path $scriptDir nupkg
-$pathtonuspec = Join-Path $srcDir BlogDoFT.dotnet-templates.nuspec
+$pathtonuspec = Join-Path $srcDir BlogDoFT.dotnet-templates.csproj
 if (Test-Path $pathtonuspec) {
-    nuget.exe pack $pathtonuspec -OutputDirectory $outputpath -NoDefaultExcludes
+    dotnet pack --output $outputpath $pathtonuspec
 }
 else {
     'ERROR: nuspec file not found at {0}' -f $pathtonuspec | Write-Error
