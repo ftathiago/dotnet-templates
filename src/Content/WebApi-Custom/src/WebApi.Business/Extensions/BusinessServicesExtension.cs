@@ -7,7 +7,7 @@ using WebApi.Business.Services;
 namespace WebApi.Business.Extensions
 {
     [ExcludeFromCodeCoverage]
-    public static class ServicesExtension
+    public static class BusinessServicesExtension
     {
         public static IServiceCollection AddBusiness(this IServiceCollection services) =>
 #if (!excludeSamples)
