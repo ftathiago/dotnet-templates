@@ -13,7 +13,7 @@ using WebApi.Shared.Data.Contexts;
 namespace WebApi.InfraData.Extensions
 {
     [ExcludeFromCodeCoverage]
-    public static class ServicesExtension
+    public static class InfraDataServicesExtension
     {
         public static IServiceCollection AddInfraData(this IServiceCollection services) =>
             services
