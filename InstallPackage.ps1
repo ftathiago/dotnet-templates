@@ -20,8 +20,9 @@ function Clean() {
     process {
         'clean started, rootFolder "{0}"' -f $rootFolder | write-host
         # delete folders that should not be included in the nuget package
-        Get-ChildItem -path $rootFolder -include bin, obj, nupkg, coverage_report -Recurse -Directory | Select-Object -ExpandProperty FullName | Remove-item -recurse
-        Get-ChildItem -name -r | select-string -pattern ".*open.*\.xml" | ForEach-Object { Remove-Item $_ -Recurse -Force -Confirm:$false } | Out-Null        
+        Get-ChildItem -path $rootFolder -include bin, obj, nupkg, coverage_report, app -Recurse -Directory | Select-Object -ExpandProperty FullName | Remove-item -recurse
+        Get-ChildItem -name -r | select-string -pattern ".*open.*\.xml" | ForEach-Object { Remove-Item $_ -Recurse -Force -Confirm:$false } | Out-Null
+        Get-ChildItem -name -r | select-string -pattern "node_modules" | ForEach-Object { Remove-Item $_ -Recurse -Force -Confirm:$false } | Out-Null
     }
 }
 
@@ -32,7 +33,7 @@ Clean
 
 # create nuget package
 $outputpath = Join-Path $scriptDir nupkg
-$pathtonuspec = Join-Path $srcDir BlogDoFT.dotnet-templates.csproj
+$pathtonuspec = Join-Path $srcDir ambevtech.dotnet-templates.csproj
 if (Test-Path $pathtonuspec) {
     dotnet pack --output $outputpath $pathtonuspec
 }

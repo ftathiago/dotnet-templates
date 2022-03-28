@@ -1,0 +1,33 @@
+steps:
+  - checkout: git://project/webapi-infrastructure@refs/heads/main
+
+  - task: Bash@3
+    displayName: "Prepare YAMLs"
+    inputs:
+      targetType: "inline"
+      script: |
+        for filename in *.yml; do
+          echo "Replacing $filename"
+          envsubst < $filename > tmp.yml
+          mv tmp.yml $filename
+          cat $filename
+        done;
+      workingDirectory: "$(WebApi.DeployFiles.Path)"
+
+  - task: Kubernetes@1
+    displayName: Apply kubernetes deploy
+    inputs:
+      azureContainerRegistry: $(WebApi.kube_azureContainerRegistry)
+      kubernetesServiceEndpoint: $(WebApi.kube_ServiceEndpoint)
+      namespace: $(WebApi.kube_namespace)
+      command: apply
+      arguments: -f $(WebApi.kube_deploy_file)
+
+  - task: Kubernetes@1
+    displayName: Rollout new deploy
+    inputs:
+      azureContainerRegistry: $(WebApi.kube_azureContainerRegistry)
+      kubernetesServiceEndpoint: $(WebApi.kube_ServiceEndpoint)
+      namespace: $(WebApi.kube_namespace)
+      command: rollout
+      arguments: restart deploy $(WebApi.kube_deploy)

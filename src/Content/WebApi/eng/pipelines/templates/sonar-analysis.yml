@@ -1,0 +1,80 @@
+steps:
+  - task: UseDotNet@2
+    displayName: ".net Core for sonar"
+    inputs:
+      packageType: sdk
+      version: 3.x
+
+  - powershell: |
+      if ($env:BUILD_SOURCEBRANCH.StartsWith('refs/pull')) {
+        Write-Host 'Pull Request'
+
+        $SourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
+        $SourceBranch = $SourceBranch.Replace("refs/heads/", "")
+
+        $TargetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+        $TargetBranch = $TargetBranch.Replace("refs/heads/", "")
+
+        Write-Host "##[debug] .. SourceBranch: $SourceBranch"
+        Write-Host "##[debug] .. TargetBranch: $TargetBranch"
+
+        Write-Host "##vso[task.setvariable variable=SonarPullRequestBranch;]$SourceBranch"
+        Write-Host "##vso[task.setvariable variable=SonarPullRequestBase;]$TargetBranch"
+
+      } elseif ($env:BUILD_SOURCEBRANCH.StartsWith('refs/heads/release')) {
+        $SonarBranchName = $env:BUILD_SOURCEBRANCH
+        $SonarBranchName = $SonarBranchName.Replace("refs/heads/", "")
+
+        Write-Host "##[debug] .. SonarBranchName: $SonarBranchName"
+
+        Write-Host "##vso[task.setvariable variable=SonarBranchName;]$SonarBranchName"
+
+      } else {
+        $SonarBranchName = $env:BUILD_SOURCEBRANCHNAME
+
+        Write-Host "##[debug] .. SonarBranchName: $SonarBranchName"
+
+        Write-Host "##vso[task.setvariable variable=SonarBranchName;]$SonarBranchName"
+      }
+    displayName: Resolve branch name
+
+  - task: SonarQubePrepare@4
+    displayName: "SonarQube Pull Request Analysis Configuration"
+    inputs:
+      SonarQube: $(Sonar.ServiceConnection)
+      projectKey: $(WebApi.Sonar.ProjectKey)
+      projectName: $(WebApi.Sonar.ProjectName)
+      extraProperties: |
+        sonar.cs.opencover.reportsPaths=**/*coverage.opencover.xml
+        sonar.cpd.exclusions=$(WebApi.Sonar.Duplication.Exclusions)
+        sonar.coverage.exclusions=$(WebApi.Sonar.Coverage.Exclusions)
+        sonar.pullrequest.key=$(System.PullRequest.PullRequestId)
+        sonar.pullrequest.branch=$(SonarPullRequestBranch)
+        sonar.pullrequest.base=$(SonarPullRequestBase)
+        sonar.buildbreaker.skip=false
+        sonar.exclusions=$(WebApi.Sonar.Exclusions)
+        sonar.projectVersion=$(Project.Version)
+        '
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+
+  - task: SonarQubePrepare@4
+    displayName: "SonarQube Branch Analysis Configuration"
+    inputs:
+      SonarQube: $(Sonar.ServiceConnection)
+      projectKey: $(WebApi.Sonar.ProjectKey)
+      projectName: $(WebApi.Sonar.ProjectName)
+      extraProperties: |
+        sonar.cs.opencover.reportsPaths=**/*coverage.opencover.xml
+        sonar.cpd.exclusions=$(WebApi.Sonar.Duplication.Exclusions)
+        sonar.coverage.exclusions=$(WebApi.Sonar.Coverage.Exclusions)
+        sonar.exclusions=$(WebApi.Sonar.Exclusions)
+        sonar.branch.name=$(SonarBranchName)
+        sonar.projectVersion=$(Project.Version)
+            '
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+
+  - template: ./csharp-build.yml
+
+  - task: SonarQubeAnalyze@4
+    displayName: "Sonar Quality Gate Analysis"
+    condition: succeeded()

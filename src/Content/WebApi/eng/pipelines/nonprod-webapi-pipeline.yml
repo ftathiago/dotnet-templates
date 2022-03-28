@@ -1,0 +1,41 @@
+﻿trigger:
+  - release/*
+  - develop
+
+pool:
+  vmImage: ubuntu-20.04
+
+variables:
+  - name: Project.Version
+    value: $(Build.SourceBranchName)-$(Build.SourceVersion)
+  - group: CodeQuality
+  - group: WebApi-CodeQuality
+  - group: WebApi-NonProd-Docker
+  - group: WebApi-NonProd-Deploy
+  - group: WebApi-NonProd-Config
+
+stages:
+  - stage: codeAnalysis
+    displayName: Code Analysis
+    jobs:
+      - job: Build
+        steps:
+          - template: ./templates/sonar-analysis.yml
+
+  - stage: dtrack
+    dependsOn: []
+    jobs:
+      - job: Dependency_Track
+        steps:
+          - checkout: self
+          - template: ./templates/dtrack.yml
+
+  - stage: Deploy
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['WebApi.Deploy.DoDeploy'], 'true'))
+    displayName: Deploy do novo código fonte
+    dependsOn: codeAnalysis
+    jobs:
+      - job: Deploy
+        steps:
+          - template: ./templates/docker.yml
+          - template: ./templates/deploy.yml

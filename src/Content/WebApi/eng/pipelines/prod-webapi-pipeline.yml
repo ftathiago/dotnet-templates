@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+      - main
+  tags:
+    include:
+      - v*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: Project.Version
+    value: $(Build.SourceBranchName)-$(Build.SourceVersion)
+  - group: CodeQuality
+  - group: WebApi-CodeQuality
+  - group: WebApi-Prod-Docker
+  - group: WebApi-Prod-Config
+  - group: WebApi-Prod-Deploy
+
+stages:
+  - stage: dtrack
+    dependsOn: []
+    jobs:
+      - job: Dependency_Track
+        steps:
+          - checkout: self
+          - template: ./eng/pipelines/templates/dtrack.yml
+
+  - stage: codeAnalysis
+    displayName: Code Analysis
+    jobs:
+      - job: Build
+        steps:
+          - template: ./eng/pipelines/templates/sonar-analysis.yml
+  - stage: Deploy
+    condition: and(
+      succeeded(),
+      ne(variables['Build.Reason'], 'PullRequest'),
+      eq(variables['WebApi.Deploy.DoDeploy'], 'true'),
+      startsWith(variables['Build.SourceBranch'], '/refs/tags'))
+    displayName: Deploy do novo código fonte
+    dependsOn: codeAnalysis
+    jobs:
+      - job: Deploy
+        steps:
+          - template: ./templates/docker.yml
+          - template: ./templates/deploy.yml

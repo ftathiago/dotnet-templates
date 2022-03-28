@@ -1,0 +1,54 @@
+﻿{
+  "$schema": "http://json.schemastore.org/vs-2017.3.host",
+  "icon": "icon.png",
+  "symbolInfo": [
+    {
+      "id": "exclude-samples",
+      "name": {
+        "text": "Exclude Samples"
+      },
+      "isVisible": "true",
+      "defaultValue": "false"
+    },
+    {
+      "id": "exclude-warmup",
+      "name": {
+        "text": "Exclude warmup capabilities."
+      },
+      "isVisible": "true",
+      "defaultValue": "false"
+    },
+    {
+      "id": "exclude-datadog",
+      "name": {
+        "text": "Exclude Datadog capabilities."
+      },
+      "isVisible": "true",
+      "defaultValue": "false"
+    },
+    {
+      "id": "database",
+      "name": {
+        "text": "Select a database for your application."
+      },
+      "isVisible": "true",
+      "defaultValue": "postgres"
+    },
+    {
+      "id": "orm",
+      "name": {
+        "text": "Select a ORM to persistence layer."
+      },
+      "isVisible": "true",
+      "defaultValue": "ef"
+    },
+    {
+      "id": "domain-name",
+      "name": {
+        "text": "Set a domain name to compose application name."
+      },
+      "isVisible": "true",
+      "defaultValue": "domain-name"
+    }
+  ]
+}

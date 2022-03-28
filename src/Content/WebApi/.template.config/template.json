@@ -1,0 +1,385 @@
+﻿{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Francisco Thiago de Almeida",
+  "description": "A boilerplate template for WebApi micro-services.",
+  "classifications": ["Web", "WebAPI"],
+  "name": "Blog do FT - WebAPI",
+  "shortName": "bftWebApi",
+  "identity": "BlogDoFT.Templates.WebApi",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "defaultName": "WebApi",
+  "sourceName": "WebApi",
+  "preferNameDirectory": true,
+  "guids": [
+    "2ac4259a-d092-4912-a945-eaedeea337b8",
+    "F365E7EA-A372-4AC0-8263-882141CB183E",
+    "2B1C6F20-29C9-4E62-B3D9-0F098B0D51BB",
+    "DBFD4FA0-B511-40C8-BFC0-6ED2D0035CE5",
+    "9781A08C-3AD5-4B91-80CC-80FD5CCE46C7",
+    "3378DAF0-95D4-4861-BE40-99D0358C0971",
+    "12445EBD-B43A-481A-8BF0-9B3B92288AAF",
+    "BE37901B-5258-4216-83F1-0A1F74D9723A",
+    "916EEC3D-E4E6-442A-AB43-18A711530859",
+    "213E0D9A-0E97-41F6-8F49-F4CAFB508BB7",
+    "0D51FBC1-201F-48E7-A081-053DC34470ED",
+    "C1DB3C6F-3E31-4CE8-959A-BE6DABD7C33F"
+  ],
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net5.0",
+          "description": "Target net5.0"
+        }
+      ],
+      "replaces": "net5.0",
+      "defaultValue": "net5.0"
+    },
+    "exclude-samples": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Create sample code",
+      "defaultValue": "false"
+    },
+    "exclude-warmup": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Exclude warmup capabilities",
+      "defaultValue": "false"
+    },
+    "database": {
+      "type": "parameter",
+      "isRequired": true,
+      "description": "Select a database for your application.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "sqlserver",
+          "description": "SQL Server"
+        },
+        {
+          "choice": "postgres",
+          "description": "Postgres"
+        }
+      ],
+      "defaultValue": "sqlserver"
+    },
+    "orm": {
+      "type": "parameter",
+      "isRequired": true,
+      "description": "Select a ORM to persistence layer.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "dapper",
+          "description": "Dapper"
+        },
+        {
+          "choice": "ef",
+          "description": "Entity Framework"
+        }
+      ],
+      "defaultValue": "ef"
+    },
+    "domain-name": {
+      "type": "parameter",
+      "description": "Set a domain name to compose application name.",
+      "datatype": "text",
+      "defaultValue": "domain-name",
+      "replaces": "domain-name"
+    },
+    "isDatabaseSqlServer": {
+      "type": "computed",
+      "value": "(database == \"sqlserver\")"
+    },
+    "isDatabasePostgres": {
+      "type": "computed",
+      "value": "(database == \"postgres\")"
+    },
+    "isDapper": {
+      "type": "computed",
+      "value": "(orm == \"dapper\")"
+    },
+    "isEf": {
+      "type": "computed",
+      "value": "(orm == \"ef\")"
+    },
+    "isWindows": {
+      "type": "computed",
+      "value": "(OS == \"Windows_NT\")"
+    },
+    "excludeSamples": {
+      "type": "computed",
+      "value": "(exclude-samples)"
+    },
+    "excludeWarmup": {
+      "type": "computed",
+      "value": "(exclude-warmup)"
+    },
+    "DESIGN_TIME": {
+      "type": "computed",
+      "value": "(true)"
+    }
+  },
+  "placeholderFilename": "-.-",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(exclude-samples)",
+          "exclude": ["**/*Sample*.cs", "**/Migrations/*.cs"]
+        },
+        {
+          "condition": "(exclude-datadog)",
+          "exclude": ["**/DatadogSettings.cs", "**/DatadogExtension.cs"]
+        },
+        {
+          "condition": "!(warmup)",
+          "exclude": ["**/*WarmUp/**"]
+        },
+        {
+          "condition": "(!isDatabaseSqlServer)",
+          "exclude": [
+            "**/WebApi.*InfraData*/**/SqlConnectionFactory*.cs",
+            "**/eng/docker/**/sqlserver"
+          ]
+        },
+        {
+          "condition": "(!isDatabasePostgres)",
+          "exclude": [
+            "**/WebApi.*InfraData*/**/NpgConnectionFactory*.cs",
+            "**/eng/docker/**/postgres/"
+          ]
+        },
+        {
+          "condition": "(isEf)",
+          "exclude": [
+            "**/Migrations/InitializeDatabase*.cs",
+            "**/Migrations/SeedInitialData*.cs"
+          ],
+          "rename": {
+            "Impl/EfUnitOfWork.cs": "Impl/UnitOfWork.cs",
+            "Repositories/EfSampleRepository.cs": "Repositories/SampleRepository.cs",
+            "Repositories/EfSampleRepositoryTests.cs": "Repositories/SampleRepositoryTests.cs",
+            "Contexts/EfUnitOfWorkTests.cs": "Contexts/UnitOfWorkTests.cs"
+          }
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "WebApi.sln"
+    },
+    {
+      "path": "./src/WebApi.DapperInfraData/WebApi.DapperInfraData.csproj",
+      "condition": "(isDapper)"
+    },
+    {
+      "path": "./__tests__/WebApi.DapperInfraData.Tests/WebApi.DapperInfraData.Tests.csproj",
+      "condition": "(isDapper)"
+    },
+    {
+      "path": "./src/WebApi.EfInfraData/WebApi.EfInfraData.csproj",
+      "condition": "(isEf)"
+    },
+    {
+      "path": "./__tests__/WebApi.EfInfraData.Tests/WebApi.EfInfraData.Tests.csproj",
+      "condition": "(isEf)"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(!isWindows)",
+      "description": "Make scripts executable",
+      "manualInstructions": [
+        {
+          "text": "Run 'chmod +x *.cmd'"
+        }
+      ],
+      "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+      "args": {
+        "+x": "tools/*.cmd"
+      },
+      "continueOnError": true
+    },
+    {
+      "condition": "(!isWindows)",
+      "description": "Make scripts executable",
+      "manualInstructions": [
+        {
+          "text": "Run 'chmod +x tools/*.sh'"
+        }
+      ],
+      "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+      "args": {
+        "+x": "tools/*.sh"
+      },
+      "continueOnError": true
+    },
+    {
+      "condition": "(!isWindows)",
+      "description": "Make productions scripts executable",
+      "manualInstructions": [
+        {
+          "text": "Run 'chmod +x *.sh'"
+        }
+      ],
+      "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+      "args": {
+        "+x": "*.sh"
+      },
+      "continueOnError": true
+    },
+    {
+      "condition": "(!isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": "tools/add-git-hooks.sh",
+        "args": "",
+        "redirectStandardOutput": "false"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run 'tools/add-git-hooks.sh'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "condition": "(isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": ".\\tools\\add-git-hooks.cmd",
+        "args": "",
+        "redirectStandardOutput": "true"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run '.\\tools\\add-git-hooks.cmd'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "condition": "(isEf && isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": ".\\tools\\remove-dapper.cmd",
+        "args": "",
+        "redirectStandardOutput": "true"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run 'tools/remove-dapper.cmd'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "condition": "(isEf && !isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": "tools/remove-dapper.sh",
+        "args": "",
+        "redirectStandardOutput": "true"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run 'tools/remove-dapper.sh'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "condition": "(isDapper && isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": ".\\tools\\remove-ef.cmd",
+        "args": "",
+        "redirectStandardOutput": "true"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run 'tools/remove-ef.cmd'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "condition": "(isDapper && !isWindows)",
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": "tools/remove-ef.sh",
+        "args": "",
+        "redirectStandardOutput": "true"
+      },
+      "manualInstructions": [
+        {
+          "text": "Run 'tools/remove-ef.sh'"
+        }
+      ],
+      "continueOnError": true,
+      "description ": "Setup pre-commit hooks."
+    },
+    {
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ],
+  "SpecialCustomOperations": {
+    "**/*.y?ml": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": ["#if"],
+            "else": ["#else"],
+            "elseif": ["#elseif"],
+            "endif": ["#endif"],
+            "actionableIf": ["##if"],
+            "actionableElse": ["##else"],
+            "actionableElseif": ["##elseif"],
+            "actions": ["uncomment", "reduceComment"],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "#",
+            "replacement": "",
+            "id": "uncomment"
+          }
+        },
+        {
+          "type": "replacement",
+          "configuration": {
+            "original": "##",
+            "replacement": "#",
+            "id": "reduceComment"
+          }
+        }
+      ]
+    }
+  }
+}
