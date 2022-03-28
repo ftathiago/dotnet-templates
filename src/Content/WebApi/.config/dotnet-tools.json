@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-format": {
+      "version": "5.1.250801",
+      "commands": [
+        "dotnet-format"
+      ]
+    },
+    "fluentmigrator.dotnet.cli": {
+      "version": "3.3.2",
+      "commands": [
+        "dotnet-fm"
+      ]
+    },
+    "adr": {
+      "version": "0.1.0-preview.36",
+      "commands": [
+        "adr"
+      ]
+    },
+    "dotnet-ef": {
+      "version": "5.0.12",
+      "commands": [
+        "dotnet-ef"
+      ]
+    },
+    "dotnet-reportgenerator-globaltool": {
+      "version": "5.1.3",
+      "commands": [
+        "reportgenerator"
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+steps:
+  - task: Docker@2
+    displayName: "Build"
+    inputs:
+      command: "build"
+      containerRegistry: "$(WebApi.Docker.ServiceConnection)"
+      repository: "$(WebApi.Docker.RepositoryName)"
+      ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}:
+        tags: |
+          $(WebApi.Docker.ImageTag)
+          latest-dev
+      ? ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/release/') }}
+      : tags: |
+          $(WebApi.Docker.ImageTag)-$(Build.SourceBranchName)
+          latest-rc-$(Build.SourceBranchName)
+      ${{ elseif startsWith(variables['Build.SourceBranch'], 'main')}}:
+        tags: |
+          $(WebApi.Docker.ImageTag)
+          latest
+      ${{ else }}:
+        tags: |
+          $(WebApi.Docker.ImageTag)-$(Build.SourceBranchName)
+          latest
+      addPipelineData: false
+      arguments: "--build-arg COMMIT=$(Build.SourceVersion) --build-arg VERSION=$(Build.BuildNumber)"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+  - task: Docker@2
+    displayName: "Push"
+    inputs:
+      command: "push"
+      containerRegistry: "$(WebApi.Docker.ServiceConnection)"
+      repository: "$(WebApi.Docker.RepositoryName)"
+      ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}:
+        tags: |
+          $(WebApi.Docker.ImageTag)
+          latest-dev
+      ? ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/release/') }}
+      : tags: |
+          $(WebApi.Docker.ImageTag)-$(Build.SourceBranchName)
+          latest-rc-$(Build.SourceBranchName)
+      ${{ elseif startsWith(variables['Build.SourceBranch'], 'main')}}:
+        tags: |
+          $(WebApi.Docker.ImageTag)
+          latest
+      ${{ else }}:
+        tags: |
+          $(WebApi.Docker.ImageTag)-$(Build.SourceBranchName)
+          latest
+      addPipelineData: false
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

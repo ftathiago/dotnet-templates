@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="WebApi.Api.Tests" />
+    <InternalsVisibleTo Include="WebApi.Domain.Tests" />
+    <!--#if (isEf)-->
+    <InternalsVisibleTo Include="WebApi.EfInfraData.Tests" />
+    <!--#endif-->
+    <!--#if (isDapper)-->
+    <InternalsVisibleTo Include="WebApi.DapperInfraData.Tests" />
+    <!--#endif-->
+    <InternalsVisibleTo Include="WebApi.Shared.Tests" />
+    <InternalsVisibleTo Include="WebApi.WarmUp.Tests"/>
+  </ItemGroup>
+</Project>

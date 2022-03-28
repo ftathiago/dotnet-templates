@@ -1,0 +1,26 @@
+{
+  "name": "webapi",
+  "version": "0.0.1",
+  "main": "",
+  "scripts": {
+    "test": "dotnet clean && dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"lcov%2ccobertura%2copencover\"  -- /Parallel",
+    "extract-diagrams": "find ./docs/adr/*.md -printf \"%f\\n\" | xargs -i mmdc -i ./docs/adr/{} -o docs/adr/img/{}.svg",
+    "preinstall": "dotnet tool restore",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "lint-staged": {
+    "*.cs": "dotnet format --include"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^8.13.7",
+    "husky": "^7.0.0",
+    "lint-staged": "^11.2.6"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "description": ""
+}

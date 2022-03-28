@@ -1,0 +1,37 @@
+steps:
+  - task: UseDotNet@2
+    displayName: "Use .Net Core SDK from global.json"
+    inputs:
+      packageType: "sdk"
+      useGlobalJson: true
+  - task: DotNetCoreCLI@2
+    displayName: Install CycloneDX
+    inputs:
+      command: "custom"
+      custom: "tool"
+      arguments: "install --global CycloneDX"
+    continueOnError: true
+    condition: and(succeeded(), ne(variables['WebApi.DTrack.ProjectKey'], ''))
+
+  - task: DotNetCoreCLI@2
+    displayName: Create BOM File
+    inputs:
+      command: "custom"
+      custom: "CycloneDX"
+      arguments: "$(WebApi.DTrack.SolutionFileName) -o $(Agent.TempDirectory)"
+    continueOnError: true
+    condition: and(succeeded(), ne(variables['WebApi.DTrack.ProjectKey'], ''))
+
+  - task: Bash@3
+    displayName: Upload BOM File
+    inputs:
+      targetType: "inline"
+      script: |
+        curl -X "POST" "$(DTrack.Url)" \
+                -H 'X-Api-Key:$(WebApi.DTrack.ApiKey)' \
+                -F 'projectName=$(WebApi.DTrack.ProjectKey)' \
+                -F 'autoCreate=true' \
+                -F 'projectVersion=latest' \
+                -F 'bom=@$(Agent.TempDirectory)/bom.xml'
+    continueOnError: true
+    condition: and(succeeded(), ne(variables['WebApi.DTrack.ProjectKey'], ''))

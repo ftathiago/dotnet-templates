@@ -1,0 +1,28 @@
+steps:
+  - task: UseDotNet@2
+    displayName: ".net Core for build"
+    inputs:
+      packageType: sdk
+      version: 5.0.x
+
+  - task: DotNetCoreCLI@2
+    displayName: Solution restore
+    inputs:
+      command: "restore"
+      projects: "**/*.sln"
+      feedsToUse: "config"
+      nugetConfigPath: $(WebApi.Build.NugetPath)
+
+  - task: DotNetCoreCLI@2
+    displayName: Build solution
+    inputs:
+      command: "build"
+      projects: "**/*.sln"
+      arguments: "-c Release"
+
+  - task: DotNetCoreCLI@2
+    displayName: Running tests
+    inputs:
+      command: "test"
+      projects: "**/*.sln"
+      arguments: '--configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit.*]*%2c[coverlet.*]*" -- /Parallel'
