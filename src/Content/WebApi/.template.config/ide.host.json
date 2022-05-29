@@ -19,14 +19,6 @@
       "defaultValue": "false"
     },
     {
-      "id": "exclude-datadog",
-      "name": {
-        "text": "Exclude Datadog capabilities."
-      },
-      "isVisible": "true",
-      "defaultValue": "false"
-    },
-    {
       "id": "database",
       "name": {
         "text": "Select a database for your application."

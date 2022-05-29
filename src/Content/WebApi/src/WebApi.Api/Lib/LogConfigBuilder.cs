@@ -1,3 +1,4 @@
+using Elastic.Apm.SerilogEnricher;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -40,7 +41,7 @@ namespace WebApi.Api.Lib
                 .Enrich.WithExceptionData()
                 .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
-                .ReadFrom.Configuration(_configuration)
+                .Enrich.WithElasticApmCorrelationInfo()
                 .WriteTo.Console(new RenderedCompactJsonFormatter());
 
             return WriteLogOnFile(logConfigBuilder)

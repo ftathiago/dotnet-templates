@@ -1,22 +1,7 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS dotnet_restore
-WORKDIR /src
-COPY "src/WebApi.Api/WebApi.Api.csproj" "src/WebApi.Api/WebApi.Api.csproj"
-COPY "src/WebApi.Domain/WebApi.Domain.csproj" "src/WebApi.Domain/WebApi.Domain.csproj"
-COPY "src/WebApi.InfraData/WebApi.InfraData.csproj" "src/WebApi.InfraData/WebApi.InfraData.csproj"
-COPY "src/WebApi.IoC/WebApi.IoC.csproj" "src/WebApi.IoC/WebApi.IoC.csproj"
-COPY "src/WebApi.Shared/WebApi.Shared.csproj" "src/WebApi.Shared/WebApi.Shared.csproj"
-COPY "src/WebApi.WarmUp/WebApi.WarmUp.csproj" "src/WebApi.WarmUp/WebApi.WarmUp.csproj"
-RUN dotnet --list-sdks
-RUN dotnet restore "src/WebApi.Api/WebApi.Api.csproj"
-
-FROM dotnet_restore AS dotnet_publish
-WORKDIR /src
-COPY . .
-RUN dotnet publish "src/WebApi.Api/WebApi.Api.csproj" -c Release -o /app 
-
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:5.0.17-alpine3.14 AS runtime
+ARG PUBLISH_FOLDER=app/
 WORKDIR /app
-COPY --from=dotnet_publish /app .
+COPY ${PUBLISH_FOLDER} .
 EXPOSE 80
 EXPOSE 443
 ENTRYPOINT ["dotnet", "WebApi.Api.dll"]

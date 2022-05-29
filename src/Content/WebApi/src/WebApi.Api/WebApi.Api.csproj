@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Datadog.Trace" Version="1.27.1" />
-    <PackageReference Include="Datadog.Trace.OpenTracing" Version="1.27.1" />
-    <PackageReference Include="DogStatsD-CSharp-Client" Version="6.0.0" />
+    <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.15.0" />
+    <PackageReference Include="Elastic.Apm.SerilogEnricher" Version="1.5.3" />
+    <PackageReference Include="Elastic.Apm.SqlClient" Version="1.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />

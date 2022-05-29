@@ -25,6 +25,10 @@ namespace WebApi.Api.Extensions
                         {
                             new OpenApiServer
                             {
+                                Url = $"http://{host}{pathBase}",
+                            },
+                            new OpenApiServer
+                            {
                                 Url = $"https://{host}{pathBase}",
                             },
                         };
@@ -33,6 +37,6 @@ namespace WebApi.Api.Extensions
                 .UseSwaggerUI(o => provider.ApiVersionDescriptions
                     .ToList()
                     .ForEach(d =>
-                        o.SwaggerEndpoint($"/swagger/{d.GroupName}/swagger.json", d.GroupName.ToUpper())));
+                        o.SwaggerEndpoint($"{pathBase}/swagger/{d.GroupName}/swagger.json", d.GroupName.ToUpper())));
     }
 }
