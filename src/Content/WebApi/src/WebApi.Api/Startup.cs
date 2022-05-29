@@ -1,3 +1,4 @@
+using Elastic.Apm.NetCoreAll;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -33,6 +34,8 @@ namespace WebApi
 
             var pathBase = Environment.GetEnvironmentVariable("ASPNETCORE_BASEPATH");
 
+            app.UseAllElasticApm(Configuration);
+
             if (env.IsDevelopment())
             {
                 app
@@ -43,7 +46,6 @@ namespace WebApi
             app
                 .UseCorrelationIdMiddleware()
                 .UseSerilogRequestLogging()
-                .UseHttpsRedirection()
                 .UseRouting()
                 .UseHealthCheck()
                 .UseAuthentication()

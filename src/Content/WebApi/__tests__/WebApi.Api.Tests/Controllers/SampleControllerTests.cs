@@ -122,8 +122,8 @@ namespace WebApi.Api.Tests.Controllers
         };
 
         private SampleController GetController() => new(
-                _service.Object,
-                _repository.Object,
-                _stringLocalizer.Object);
+            _service.Object,
+            _repository.Object,
+            _stringLocalizer.Object);
     }
 }

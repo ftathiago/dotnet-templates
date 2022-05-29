@@ -1,3 +1,4 @@
+using Elastic.Apm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,19 +44,27 @@ namespace WebApi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Get(int? id)
         {
-            if (!id.HasValue)
+            var span = Agent.Tracer.CurrentTransaction.StartSpan("Request Test", "Request");
+            try
             {
-                return BadRequest();
+                if (!id.HasValue)
+                {
+                    return BadRequest();
+                }
+
+                var sample = _service.GetSampleBy(id.Value);
+
+                if (sample is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(SampleResponse.From(sample));
             }
-
-            var sample = _service.GetSampleBy(id.Value);
-
-            if (sample is null)
+            finally
             {
-                return NotFound();
+                span.End();
             }
-
-            return Ok(SampleResponse.From(sample));
         }
 
         /// <summary>This endpoint is just to show how to work with objects at querystring.</summary>

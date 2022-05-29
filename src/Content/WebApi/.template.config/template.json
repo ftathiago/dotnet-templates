@@ -136,10 +136,6 @@
           "exclude": ["**/*Sample*.cs", "**/Migrations/*.cs"]
         },
         {
-          "condition": "(exclude-datadog)",
-          "exclude": ["**/DatadogSettings.cs", "**/DatadogExtension.cs"]
-        },
-        {
           "condition": "!(warmup)",
           "exclude": ["**/*WarmUp/**"]
         },

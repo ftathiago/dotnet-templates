@@ -4,9 +4,13 @@ networks:
   backend:
     driver: bridge
   frontend:
+  elastic:
+    driver: bridge
 
 volumes:
   webapi.postgres-database:
+  esdata:
+    driver: local
 
 services:
 #if(isDatabaseSqlServer)
@@ -42,6 +46,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_BASEPATH=/domain-name
+      - ElasticApm__ServerUrl=http://apm-server:8200
+      - ElasticApm__Environment=Docker
+      - ElasticApm__ServiceName=WebApi
 #if(isDatabaseSqlServer)
       - ConnectionStrings__Default=Server=sqlserver;Database=WebApiDB; User=sa;Password=MyP4ssw0rd_;Pooling=True;Enlist=False; Min Pool Size=101; Max Pool Size=300
 #endif
@@ -53,13 +61,15 @@ services:
     networks:
       - frontend
       - backend
+      - elastic
     #    Choose only one
     depends_on:
 #if(isDatabaseSqlServer)      
-      - sqlserver
+      # - sqlserver
 #endif
 #if(isDatabasePostgres) 
       - postgres
+      - apm-server
 #endif
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
@@ -79,3 +89,70 @@ services:
       - backend
     depends_on:
       - domain-name.webapi
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.13.0
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
+    cap_drop: [ "ALL" ]
+    ports:
+      - 8200:8200
+    networks:
+      - elastic
+    command: >
+      apm-server -e
+        -E apm-server.rum.enabled=true
+        -E setup.kibana.host=kibana:5601
+        -E setup.template.settings.index.number_of_replicas=0
+        -E apm-server.kibana.enabled=true
+        -E apm-server.kibana.host=kibana:5601
+        -E output.elasticsearch.hosts=["elasticsearch:9200"]
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    environment:
+      - bootstrap.memory_lock=true
+      - cluster.name=docker-cluster
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.type=single-node
+      # - ES_JAVA_OPTS=-XX:UseAVX=2 -Xms1g -Xmx1g
+      - ES_JAVA_OPTS=-Xms750m -Xmx750m
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+    healthcheck:
+      interval: 20s
+      retries: 10
+      test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.0
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:5601/api/status

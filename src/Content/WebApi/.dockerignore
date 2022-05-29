@@ -4,6 +4,11 @@ create_docker.ps1
 dtrack.ps1
 dtrack_files
 eng/*
+docs/*
+.husky/*
+.config/*
+.template.config/*
+tools/*
 
 # Created by https://www.gitignore.io/api/csharp
 
