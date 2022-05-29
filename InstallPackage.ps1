@@ -29,6 +29,7 @@ function Clean() {
 
 
 # start script
+dotnet new --uninstall BlogDoFT.dotnet-templates.nuspec
 Clean
 
 # create nuget package
